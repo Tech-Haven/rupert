@@ -1,0 +1,22 @@
+{
+  "name": "foxy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "start": "pm2 start ecosystem.config.js --env production",
+    "dev": "nodemon --require dotenv/config bot.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "date-fns": "^2.16.1",
+    "discord.js": "^12.5.1",
+    "yargs-parser": "^20.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.7"
+  }
+}
