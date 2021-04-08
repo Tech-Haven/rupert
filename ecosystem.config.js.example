@@ -17,6 +17,7 @@ module.exports = {
           '',
         OPENSTACK_FOXY_API_APPLICATION_CREDS_SECRET:
           '',
+        PREFIX: 'foxy!',
       },
     },
   ],
