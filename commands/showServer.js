@@ -28,7 +28,7 @@ module.exports = {
 
       const imageRes = await axios({
         method: 'get',
-        url: `${TH_API_URL}/openstack/images/${server.image.id}}`,
+        url: `${TH_API_URL}/openstack/images/${server.image.id}`,
         headers: {
           'X-Auth-Token': props.xAuthToken,
         },
