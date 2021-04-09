@@ -78,18 +78,24 @@ const startBot = async () => {
       const command = client.commands.get(commandName);
 
       if (command.guildOnly && message.channel.type !== 'text') {
-        return message.reply(`I can't execute that command inside DMs!`);
+        return message.reply(`I can't execute \`${commandName}\` inside DMs!`);
+      }
+
+      if (command.dmOnly && message.channel.type !== 'dm') {
+        return message.reply(
+          `I can only execute \`${commandName}\` inside DMs!`
+        );
       }
 
       if (command.disabled) {
-        return message.reply(`This command is disabled`);
+        return message.reply(`\`${commandName}\` is disabled`);
       }
 
       if (command.staffOnly) {
         const isStaff = await checkIfStaff(message.author.id);
         if (!isStaff) {
           return message.reply(
-            `You don't have permission to use this command!`
+            `You don't have permission to use this \`${commandName}\`!`
           );
         }
       }
@@ -150,7 +156,7 @@ const startBot = async () => {
         } catch (error) {
           console.error(error);
           return message.reply(
-            `Please save a SSH key to your account before creating a VM. Use the \`help update-ssh\` command for help.`
+            `Please save a SSH key to your account before creating a VM. Use the \`${PREFIX} help update-ssh\` command for help.`
           );
         }
       }

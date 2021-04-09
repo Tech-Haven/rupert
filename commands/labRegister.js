@@ -7,6 +7,7 @@ const VAULT_TOKEN = process.env.VAULT_TOKEN;
 module.exports = {
   name: 'lab-register',
   description: 'Create a new account on the lab.',
+  dmOnly: true,
   async execute(message, args, props) {
     try {
       const adminToken = await getAdminToken();
@@ -48,7 +49,7 @@ module.exports = {
         return message.reply(`**Error**: ${createVpnRes.data.error}`);
       }
 
-      const msg = message.channel.send({
+      message.channel.send({
         embed: {
           color: '4DBBD3',
           title: `Account Information`,
