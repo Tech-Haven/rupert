@@ -94,7 +94,7 @@ module.exports = {
 
       const server = serverResponse.data.data;
 
-      message.channel.send({
+      const msg = await message.channel.send({
         embed: {
           color: '4DBBD3',
           title: `${server.name} - ${server.id}`,
@@ -136,6 +136,61 @@ module.exports = {
           },
         },
       });
+      const ipCheck = setInterval(async () => {
+        const serverResponse = await axios({
+          method: 'get',
+          url: `${TH_API_URL}/openstack/servers/${newServer.id}`,
+          headers: {
+            'X-Auth-Token': props.xAuthToken,
+          },
+        });
+        if (serverResponse.data.data.addresses.hasOwnProperty('public')) {
+          let ip = serverResponse.data.data.addresses.public[0].addr;
+          clearInterval(ipCheck);
+          msg.edit({
+            embed: {
+              color: '4DBBD3',
+              title: `${server.name} - ${server.id}`,
+              fields: [
+                {
+                  name: 'IP Address',
+                  value: ip,
+                  inline: true,
+                },
+                {
+                  name: 'Image',
+                  value: image.name,
+                  inline: true,
+                },
+                {
+                  name: 'Status',
+                  value: server.status,
+                  inline: true,
+                },
+                {
+                  name: 'CPU',
+                  value: server.flavor.vcpus,
+                  inline: true,
+                },
+                {
+                  name: 'Memory',
+                  value: `${server.flavor.ram} MB`,
+                  inline: true,
+                },
+                {
+                  name: 'Disk',
+                  value: `${server.flavor.disk} GB`,
+                  inline: true,
+                },
+              ],
+              timestamp: new Date(),
+              footer: {
+                text: 'Sent via Foxy',
+              },
+            },
+          });
+        }
+      }, 5000);
     } catch (error) {
       message.reply(`Error! ${error}`);
     }
