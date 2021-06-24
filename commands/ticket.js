@@ -273,12 +273,13 @@ const sendTicketToForums = async (user, ticketObject) => {
       data: body,
       headers: {
         'XF-Api-Key': FORUMS_TOKEN,
-        'Discord-ID': message.author.id,
+        'Discord-ID': user.id,
       },
     });
     console.log(res);
     return user.send(`Ticket created!`);
   } catch (error) {
+    console.log(error);
     return user.send(
       `Ticket creation failed! ${error.response.status}: ${error.response.data.error}
       
