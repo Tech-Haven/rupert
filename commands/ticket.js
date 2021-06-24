@@ -1,6 +1,5 @@
 const axios = require('axios');
 const yparse = require('yargs-parser');
-const { createThread } = require('../utils/forums');
 
 const FORUMS_TOKEN = process.env.FORUMS_TOKEN;
 const TH_API_URL = process.env.TH_API_URL;
@@ -260,17 +259,31 @@ const waitForDescription = (user) => {
 
 const sendTicketToForums = async (user, ticketObject) => {
   const { nodeID, title, description } = ticketObject;
+
+  const body = {
+    node_id: nodeID,
+    title,
+    message: description,
+  };
+
   try {
-    const res = await createThread(nodeID, title, description);
-
-    if (res.error) {
-      return user.send(`**Error!:** ${res.error}`);
-    }
-
-    return user.send(
-      `Ticket created! Check the help desk category in Discord for confirmation.`
-    );
+    const res = await axios({
+      method: 'post',
+      url: `${TH_API_URL}/forums/threads`,
+      data: body,
+      headers: {
+        'XF-Api-Key': FORUMS_TOKEN,
+        'Discord-ID': message.author.id,
+      },
+    });
+    console.log(res);
+    return user.send(`Ticket created!`);
   } catch (error) {
-    return user.send(`**Error!:** ${error}`);
+    return user.send(
+      `Ticket creation failed! ${error.response.status}: ${error.response.data.error}
+      
+Please create an account at <https://thetechhaven.com/register/connected-accounts/ewr_discord/?setup=1> then use command \`${process.env.PREFIX} forum-link\` to link your forum and Discord account.
+      `
+    );
   }
 };
