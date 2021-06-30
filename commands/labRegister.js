@@ -1,8 +1,8 @@
 const axios = require('axios');
+const { MessageAttachment } = require('discord.js');
 const { getAdminToken } = require('../utils/utils');
 
 const TH_API_URL = process.env.TH_API_URL;
-const VAULT_TOKEN = process.env.VAULT_TOKEN;
 
 module.exports = {
   name: 'lab-register',
@@ -16,13 +16,13 @@ module.exports = {
         return message.reply(`**Error**: Could not retrieve admin token`);
       }
 
+      const msg = await message.channel.send('Creating user...');
       // Bootstrap user registration
       const registerRes = await axios({
         method: 'post',
         url: `${TH_API_URL}/openstack/bootstrap`,
         headers: {
           'X-Auth-Token': adminToken,
-          'X-Vault-Token': VAULT_TOKEN,
         },
         data: {
           username: message.author.id,
@@ -36,6 +36,7 @@ module.exports = {
 
       const user = registerRes.data.data;
 
+      msg.edit('Creating VPN file...');
       // Create/pull a VPN file
       const createVpnRes = await axios({
         method: 'get',
@@ -59,10 +60,6 @@ module.exports = {
               value: 'https://lab.thetechhaven.com',
             },
             {
-              name: 'VPN Download Link',
-              value: 'https://control.thetechhaven.com',
-            },
-            {
               name: 'Username',
               value: user.name,
               inline: true,
@@ -79,6 +76,29 @@ module.exports = {
           },
         },
       });
+
+      msg.edit('Retrieving VPN file...');
+      const res = await axios({
+        method: 'get',
+        url: `${TH_API_URL}/download`,
+        headers: {
+          'X-Auth-Token': user.token,
+        },
+      });
+
+      if (res.data.error) {
+        return message.reply(`**Error**: ${res.data.error}`);
+      }
+
+      const ovpn = res.data;
+
+      const buffer = Buffer.from(ovpn);
+      const attachment = new MessageAttachment(
+        buffer,
+        `${message.author.id}.ovpn`
+      );
+
+      message.channel.send(attachment);
     } catch (error) {
       console.log(error);
       message.reply(`Error! ${error}`);

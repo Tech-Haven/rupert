@@ -3,7 +3,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const axios = require('axios');
 
-const { checkIfStaff } = require('./utils/utils');
+const { checkIfStaff, getAdminToken } = require('./utils/utils');
 
 const TH_API_URL = process.env.TH_API_URL;
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -103,23 +103,22 @@ const startBot = async () => {
       // Check for app creds on Vault, request new token and pass to props
       if (command.labAuth) {
         try {
+          const adminToken = await getAdminToken();
           // Get id and secret from Vault
-          const vaultRes = await axios({
+          const res = await axios({
             method: 'get',
-            url: `${TH_API_URL}/vault/secrets/${message.author.id}`,
+            url: `${TH_API_URL}/openstack/app-creds/${message.author.id}`,
             headers: {
-              'X-Vault-Token': VAULT_TOKEN,
+              'X-Auth-Token': adminToken,
             },
           });
 
-          if (vaultRes.data.error) {
-            return message.reply(`**Error**: ${vaultRes.data.error}`);
+          if (res.data.error) {
+            return message.reply(`**Error**: ${res.data.error}`);
           }
 
-          const {
-            application_credential_id,
-            application_credential_secret,
-          } = vaultRes.data.data;
+          const { application_credential_id, application_credential_secret } =
+            res.data.data;
 
           // Request token
           const tokenRes = await axios({
@@ -137,6 +136,7 @@ const startBot = async () => {
 
           props.xAuthToken = tokenRes.headers['x-subject-token'];
         } catch (error) {
+          console.log(error);
           return message.reply(
             `Please login to the lab to use this command. Use \`${PREFIX} help lab-login\` command for help.`
           );
