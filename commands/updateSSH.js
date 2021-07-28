@@ -1,5 +1,7 @@
 const axios = require('axios');
 
+const TH_API_URL = process.env.TH_API_URL;
+
 module.exports = {
   name: 'update-ssh',
   description:
