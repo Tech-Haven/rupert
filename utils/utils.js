@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { BOT_TOKEN, GUILD_ID, STAFF_ROLES } = '../config';
+const { BOT_TOKEN, GUILD_ID, STAFF_ROLES } = require('../config');
 
 const getGuildMember = async (discordID) => {
   try {

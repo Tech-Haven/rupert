@@ -1,12 +1,21 @@
 const fs = require('fs');
-const Discord = require('discord.js');
+const { Client, Intents, Collection } = require('discord.js');
 const { BOT_TOKEN, PREFIX, TICKET_REACTION_MESSAGE_ID } = require('./config');
 const { checkIfStaff } = require('./utils/utils');
 
-const client = new Discord.Client({
+const client = new Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_PRESENCES,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.DIRECT_MESSAGES,
+    Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+  ],
 });
-client.commands = new Discord.Collection();
+client.commands = new Collection();
 const commandFiles = fs
   .readdirSync('./commands')
   .filter((file) => file.endsWith('.js'));
@@ -18,12 +27,7 @@ for (const file of commandFiles) {
 
 // Called when the server starts
 client.on('ready', async () => {
-  try {
-    await client.user.setPresence({ activity: { name: `${PREFIX} help` } });
-  } catch (error) {
-    console.log('Error!', error);
-  }
-
+  client.user.setPresence({ activities: [{ name: `${PREFIX} help` }] });
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
@@ -37,7 +41,7 @@ client.on('guildMemberRemove', (member) =>
   client.commands.get('membercount').update(member.guild)
 );
 
-client.on('messageReactionAdd', async (messageReaction, user) => {
+client.on('messageReactionAdd', (messageReaction, user) => {
   if (!user.bot && messageReaction.message.id == TICKET_REACTION_MESSAGE_ID) {
     try {
       client.commands.get('ticket').sendToDm(messageReaction, user);
@@ -48,7 +52,7 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
 });
 
 // Called whenever a message is created
-client.on(`message`, async (message) => {
+client.on(`messageCreate`, async (message) => {
   // Ignore other bots
   if (message.author.bot) return;
 
@@ -64,11 +68,11 @@ client.on(`message`, async (message) => {
 
   const command = client.commands.get(commandName);
 
-  if (command.guildOnly && message.channel.type !== 'text') {
+  if (command.guildOnly && message.channel.type !== 'GUILD_TEXT') {
     return message.reply(`I can't execute \`${commandName}\` inside DMs!`);
   }
 
-  if (command.dmOnly && message.channel.type !== 'dm') {
+  if (command.dmOnly && message.channel.type !== 'DM') {
     return message.reply(`I can only execute \`${commandName}\` inside DMs!`);
   }
 

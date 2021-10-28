@@ -1,4 +1,4 @@
-const { BOT_TOKEN, TH_API_URL, PREFIX } = './config';
+const { BOT_TOKEN, TH_API_URL, PREFIX } = require('./config');
 
 module.exports = {
   apps: [
