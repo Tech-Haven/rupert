@@ -1,5 +1,4 @@
-// const { checkIfStaff } = require('../utils/utils');
-const PREFIX = process.env.PREFIX;
+const { PREFIX } = '../config';
 const { checkIfStaff } = require('../utils/utils');
 
 module.exports = {
