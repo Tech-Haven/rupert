@@ -41,16 +41,6 @@ client.on('guildMemberRemove', (member) =>
   client.commands.get('membercount').update(member.guild)
 );
 
-client.on('messageReactionAdd', (messageReaction, user) => {
-  if (!user.bot && messageReaction.message.id == TICKET_REACTION_MESSAGE_ID) {
-    try {
-      client.commands.get('ticket').sendToDm(messageReaction, user);
-    } catch (error) {
-      return;
-    }
-  }
-});
-
 // Called whenever a message is created
 client.on(`messageCreate`, async (message) => {
   // Ignore other bots
