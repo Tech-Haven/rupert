@@ -13,7 +13,7 @@ module.exports = {
     } else {
       guildMember =
         message.mentions.members.first() ||
-        (await message.guild.member(args[0]));
+        (await message.guild.members.cache.get(args[0]));
     }
     try {
       guildMember
