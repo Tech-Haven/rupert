@@ -9,7 +9,7 @@ module.exports = {
     const { commands } = message.client;
     const isStaff = await checkIfStaff(message.author.id);
 
-    const allowedCommands = commands.forEach((command) => {
+    const allowedCommands = commands.filter((command) => {
       if (command.staffOnly && !isStaff) {
         return;
       }
@@ -20,6 +20,8 @@ module.exports = {
 
       return command;
     });
+
+    console.log(allowedCommands);
 
     if (!args.length) {
       allowedCommands.forEach((command) => {
