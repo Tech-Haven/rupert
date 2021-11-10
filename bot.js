@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
-const { BOT_TOKEN, PREFIX, TICKET_REACTION_MESSAGE_ID } = require('./config');
+const { BOT_TOKEN, PREFIX } = require('./config');
 const { checkIfStaff } = require('./utils/utils');
 
 const client = new Client({
