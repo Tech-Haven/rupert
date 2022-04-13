@@ -1,13 +1,18 @@
-const { PREFIX } = require('../config');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 const { checkIfStaff } = require('../utils/utils');
 
 module.exports = {
-  name: 'help',
-  description: 'List all of my commands or info about a specific command.',
-  async execute(message, args) {
+  data: new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('List all of my commands or info about a specific command.')
+    .addStringOption((option) =>
+      option.setName('command').setDescription('Name of a command')
+    ),
+  async execute(interaction) {
     let fields = [];
-    const { commands } = message.client;
-    const isStaff = await checkIfStaff(message.author.id);
+    const { commands } = interaction.client;
+    const isStaff = await checkIfStaff(interaction.user.id);
 
     const allowedCommands = commands.filter((command) => {
       if (command.staffOnly && !isStaff) {
@@ -21,18 +26,18 @@ module.exports = {
       return command;
     });
 
-    console.log(allowedCommands);
+    const commandName = interaction.options.getString('command');
 
-    if (!args.length) {
+    if (!commandName) {
       allowedCommands.forEach((command) => {
         fields.push({
-          name: command.name,
-          value: `\`${command.name}\`: ${command.description}`,
+          name: command.data.name,
+          value: `\`${command.data.name}\`: ${command.data.description}`,
         });
       });
 
       try {
-        await message.author.send({
+        await interaction.user.send({
           embeds: [
             {
               title: 'Foxy Help',
@@ -40,31 +45,36 @@ module.exports = {
             },
           ],
         });
-        if (message.channel.type === 'dm') return;
-        return await message.reply(`I've sent you a DM with all my commands!`);
-      } catch (e) {
-        console.error(`Could not send help DM to ${message.author.tag}.\n`, e);
-        return await message.reply(
-          `It seems I can't DM you! Do you have DMs disabled?`
+        if (interaction.channel.type === 'dm') return;
+        return await interaction.reply(
+          `I've sent you a DM with all my commands!`
         );
+      } catch (err) {
+        console.error(err);
+        return await interaction.reply({
+          content: `It seems I can't DM you! Do you have DMs disabled?`,
+          ephemeral: true,
+        });
       }
     }
 
-    const name = args[0].toLowerCase();
-    const command = commands.get(name);
+    const command = commands.get(commandName.toLowerCase());
 
     if (!command) {
-      return await message.reply(`That is not a valid command!`);
+      return await interaction.reply({
+        content: `That is not a valid command!`,
+        ephemeral: true,
+      });
     }
 
     fields = [
       {
         name: 'Name',
-        value: command.name,
+        value: command.data.name,
       },
       {
         name: 'Description',
-        value: command.description,
+        value: command.data.description,
       },
     ];
 
@@ -72,13 +82,13 @@ module.exports = {
       fields.push({
         name: 'Usage',
         value: `\`\`\`
-${PREFIX} ${command.usage}
+/${command.data.name} ${command.usage}
 \`\`\``,
       });
     }
 
     try {
-      await message.channel.send({
+      await interaction.reply({
         embeds: [
           {
             title: 'Foxy Help',
@@ -86,9 +96,12 @@ ${PREFIX} ${command.usage}
           },
         ],
       });
-    } catch (error) {
-      console.error(`Failed to send help message`, error);
-      return await message.reply(`Failed to send help message`);
+    } catch (err) {
+      console.error(err);
+      return await interaction.reply({
+        content: 'Failed to send help message',
+        ephemeral: true,
+      });
     }
   },
 };

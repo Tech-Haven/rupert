@@ -1,33 +1,26 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const format = require('date-fns/format');
 const formatDistance = require('date-fns/formatDistance');
 
 module.exports = {
-  name: 'profile',
-  description: 'Get information on any Discord user',
+  data: new SlashCommandBuilder()
+    .setName('profile')
+    .setDescription('Get information on any Discord user')
+    .addUserOption((option) =>
+      option.setName('user').setDescription('User ID or mention')
+    ),
   guildOnly: true,
-  async execute(message, args) {
-    let guildMember;
-    let user;
-    if (!args[0]) {
-      guildMember = message.member;
-    } else {
-      guildMember =
-        message.mentions.members.first() ||
-        (await message.guild.members.cache.get(args[0]));
-    }
-    try {
-      guildMember
-        ? (user = guildMember.user)
-        : (user = await message.client.users.fetch(args[0]));
-    } catch (e) {
-      return message.reply('User ID is not valid');
-    }
+  async execute(interaction) {
+    const user = interaction.options.getUser('user') || interaction.user;
     const createdAt = format(user.createdAt, 'MMM do yyyy, H:mm:ss');
     const createdAtFromNow = formatDistance(new Date(), user.createdAt);
     let fields;
-    if (guildMember) {
+
+    try {
+      const guildMember = await interaction.guild.members.fetch(user);
       const joinedAt = format(guildMember.joinedAt, 'MMM do yyyy, H:mm:ss');
       const joinedAtFromNow = formatDistance(new Date(), guildMember.joinedAt);
+
       fields = [
         {
           name: 'Username',
@@ -46,7 +39,7 @@ module.exports = {
         },
         {
           name: 'Highest Role',
-          value: guildMember.roles.highest.name,
+          value: `<@&${guildMember.roles.highest.id}>`,
           inline: true,
         },
         {
@@ -62,7 +55,7 @@ module.exports = {
           inline: true,
         },
       ];
-    } else {
+    } catch (err) {
       fields = [
         {
           name: 'Username',
@@ -83,24 +76,22 @@ module.exports = {
       ];
     }
 
+    const embed = {
+      color: 3447003,
+      title: 'User Profile',
+      description: `User data for <@${user.id}>`,
+      thumbnail: {
+        url: user.displayAvatarURL(),
+      },
+      fields: fields,
+      timestamp: new Date(),
+    };
+
     try {
-      message.channel.send({
-        embeds: [
-          {
-            color: 3447003,
-            title: 'User Profile',
-            description: `User data for <@${user.id}>`,
-            thumbnail: {
-              url: user.displayAvatarURL(),
-            },
-            fields: fields,
-            timestamp: new Date(),
-          },
-        ],
-      });
-    } catch (e) {
-      message.reply(`Sorry I couldnt display this profile because of : ${e}`);
-      console.log(e);
+      await interaction.reply({ embeds: [embed] });
+    } catch (err) {
+      await interaction.reply('Got an error while running this command!', err);
+      console.err(e);
     }
   },
 };
