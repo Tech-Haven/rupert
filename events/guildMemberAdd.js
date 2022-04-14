@@ -3,6 +3,6 @@
 module.exports = {
   name: 'guildMemberAdd',
   execute(member) {
-    client.commands.get('membercount').update(member.guild);
+    member.client.commands.get('membercount').update(member.guild);
   },
 };
