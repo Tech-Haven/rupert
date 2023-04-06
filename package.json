@@ -15,7 +15,8 @@
     "axios": "^0.26.1",
     "date-fns": "^2.28.0",
     "discord-api-types": "^0.31.1",
-    "discord.js": "^13.6.0"
+    "discord.js": "^13.6.0",
+    "openai": "^3.2.1"
   },
   "devDependencies": {
     "dotenv": "^16.0.0",
