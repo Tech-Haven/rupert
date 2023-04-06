@@ -31,8 +31,14 @@ module.exports = {
         max_tokens: 2000,
       });
 
+      let title = prompt;
+
+      if (title.length > 250) {
+        title = title.slice(0, 250) + '...';
+      }
+
       const embed = new MessageEmbed()
-        .setTitle(`> ${prompt}`)
+        .setTitle(`> ${title}`)
         .setDescription(
           '```' + completion.data.choices[0].message.content + '```'
         )
