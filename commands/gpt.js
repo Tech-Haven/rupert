@@ -23,6 +23,7 @@ module.exports = {
     const prompt = interaction.options.getString('prompt');
 
     try {
+      await interaction.deferReply();
       const completion = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'user', content: prompt }],
@@ -37,7 +38,7 @@ module.exports = {
         )
         .setTimestamp();
 
-      await interaction.reply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       if (error.response) {
         console.log(error.response.status);
