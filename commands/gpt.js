@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { Configuration, OpenAIApi } = require('openai');
+const { logGpt } = require('../utils/log');
 
 const configuration = new Configuration({
   organization: 'org-teSKJbo1Bt3jMZnwo9v0A1gb',
@@ -21,6 +22,8 @@ module.exports = {
     ),
   async execute(interaction) {
     const prompt = interaction.options.getString('prompt');
+
+    await logGpt(interaction.user, prompt);
 
     try {
       await interaction.deferReply();
