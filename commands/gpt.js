@@ -37,11 +37,13 @@ module.exports = {
         title = title.slice(0, 250) + '...';
       }
 
+      let description = completion.data.choices[0].message.content;
+
+      description = description.replace(/`/g, "'");
+
       const embed = new MessageEmbed()
         .setTitle(`> ${title}`)
-        .setDescription(
-          '```' + completion.data.choices[0].message.content + '```'
-        )
+        .setDescription('```' + description + '```')
         .setTimestamp();
 
       await interaction.editReply({ embeds: [embed] });
