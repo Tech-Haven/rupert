@@ -1,3 +1,4 @@
+const { promises: fsPromises } = require('fs');
 const axios = require('axios');
 const { BOT_TOKEN, GUILD_ID, STAFF_ROLES } = require('../config');
 
@@ -51,4 +52,34 @@ const checkIfStaff = async (discordID) => {
   }
 };
 
+const skidAlgorithm = async (input) => {
+  input = input.toLowerCase();
+
+  try {
+    const file = await fsPromises.readFile('skid_keywords.txt', 'utf-8');
+    const keywords = file.split(/\r?\n/);
+    const searchString = (keywords) => {
+      let occurances = 0;
+
+      keywords.forEach((e) => {
+        let regex = new RegExp(e);
+        let count = regex.test(input) ? 1 : 0;
+        occurances += count;
+      });
+
+      return occurances;
+    };
+
+    const occurances = searchString(keywords);
+    const inputWordLength = input.split(' ').length;
+
+    const prob = Math.round((occurances / inputWordLength) * 100);
+
+    return prob > 20 ? true : false;
+  } catch (error) {
+    return error;
+  }
+};
+
 exports.checkIfStaff = checkIfStaff;
+exports.skidAlgorithm = skidAlgorithm;
