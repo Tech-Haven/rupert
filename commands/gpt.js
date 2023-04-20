@@ -46,7 +46,6 @@ module.exports = {
         messages.unshift(skidSystemMessage);
       }
 
-      console.log(messages);
       const completion = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: messages,
@@ -62,11 +61,13 @@ module.exports = {
 
       let description = completion.data.choices[0].message.content;
 
-      description = description.replace(/`/g, "'");
-
       const embed = new MessageEmbed()
-        .setTitle(`> ${title}`)
-        .setDescription('```' + description + '```')
+        .setAuthor({
+          name: `${title}`,
+          iconURL: interaction.user.displayAvatarURL(),
+        })
+        .setTitle('Output: ')
+        .setDescription(description)
         .setTimestamp();
 
       await interaction.editReply({ embeds: [embed] });
