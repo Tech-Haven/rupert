@@ -10,3 +10,6 @@ addy
 location
 lost
 access
+playstation
+xbox
+account
