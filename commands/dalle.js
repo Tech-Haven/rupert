@@ -30,7 +30,7 @@ module.exports = {
       await interaction.deferReply();
 
       const response = await openai.createImage({
-        prompt: 'A cute baby sea otter',
+        prompt: prompt,
         n: 2,
         size: '512x512',
       });
