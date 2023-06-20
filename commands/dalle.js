@@ -56,8 +56,7 @@ module.exports = {
         console.log(error.response.status);
         console.log(error.response.data);
         await interaction.editReply(
-          'Error running command',
-          error.response.data.error.message
+          'Error running command' + error.response.data.error.message
         );
       } else {
         console.log(error);
