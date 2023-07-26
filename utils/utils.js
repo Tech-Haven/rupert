@@ -74,12 +74,30 @@ const skidAlgorithm = async (input) => {
     const inputWordLength = input.split(' ').length;
 
     const prob = Math.round((occurances / inputWordLength) * 100);
-    console.log('Prob: ', prob);
     return prob > 5 ? true : false;
   } catch (error) {
     return error;
   }
 };
 
+const randomPromptAlgorithm = () => {
+  const num = Math.random();
+  if (num > 0.8 && num < 0.9) {
+    return {
+      role: 'system',
+      content: 'You are a cute little fox furry. Answer questions in fursona.',
+    };
+  } else if (num > 0.9) {
+    return {
+      role: 'system',
+      content:
+        'You adore dik-diks, a small antelope creature. Be sure to talk about them whenever possible.',
+    };
+  }
+
+  return null;
+};
+
 exports.checkIfStaff = checkIfStaff;
 exports.skidAlgorithm = skidAlgorithm;
+exports.randomPromptAlgorithm = randomPromptAlgorithm;
