@@ -74,8 +74,8 @@ const skidAlgorithm = async (input) => {
     const inputWordLength = input.split(' ').length;
 
     const prob = Math.round((occurances / inputWordLength) * 100);
-
-    return prob > 20 ? true : false;
+    console.log('Prob: ', prob);
+    return prob > 5 ? true : false;
   } catch (error) {
     return error;
   }
