@@ -1,3 +1,4 @@
+const { ChannelType } = require('discord.js');
 const { checkIfStaff } = require('../utils/utils');
 
 // Called when a slash command is executed by a user
@@ -11,14 +12,14 @@ module.exports = {
 
     if (!command) return;
 
-    if (command.guildOnly && interaction.channel.type !== 'GUILD_TEXT') {
+    if (command.guildOnly && interaction.channel.type != ChannelType.GuildText) {
       return await interaction.reply({
         content: `I can't execute \`${command.data.name}\` inside DMs!`,
         ephemeral: true,
       });
     }
 
-    if (command.dmOnly && interaction.channel.type !== 'DM') {
+    if (command.dmOnly && interaction.channel.type != ChannelType.DM) {
       return await interaction.reply({
         content: `I can only execute \`${command.data.name}\` inside DMs!`,
         ephemeral: true,

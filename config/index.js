@@ -8,6 +8,7 @@ if (process.env.NODE_ENV != 'development') {
 
 exports.CLIENT_ID = '1093604083908214935';
 exports.GUILD_ID = '385903100453453825';
+exports.STAFF_ROLES = ['Staff', 'Server Admin'];
 
 exports.SKID_PROMPT =
   process.env.SKID_PROMPT ||

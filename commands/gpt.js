@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { Configuration, OpenAIApi } = require('openai');
 const { logGpt } = require('../utils/log');
 const { skidAlgorithm, randomPromptAlgorithm } = require('../utils/utils');
@@ -67,7 +66,7 @@ module.exports = {
 
       let description = completion.data.choices[0].message.content;
 
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setAuthor({
           name: `${title}`,
           iconURL: interaction.user.displayAvatarURL(),
