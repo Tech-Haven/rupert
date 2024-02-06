@@ -1,15 +1,15 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI= require('openai');
 const { logGpt } = require('../utils/log');
 const { skidAlgorithm, randomPromptAlgorithm } = require('../utils/utils');
 const { SKID_PROMPT } = require('../config/index');
 
-const configuration = new Configuration({
+const configuration = {
   organization: 'org-teSKJbo1Bt3jMZnwo9v0A1gb',
   apiKey: process.env.OPENAI_API_KEY,
-});
+}
 
-const openai = new OpenAIApi(configuration);
+const openai = new OpenAI(configuration);
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -51,7 +51,7 @@ module.exports = {
         messages.unshift(randomPrompt);
       }
 
-      const completion = await openai.createChatCompletion({
+      const completion = await openai.chat.completions.create({
         model: 'gpt-4-1106-preview',
         messages: messages,
         temperature: 0.7,
@@ -64,7 +64,7 @@ module.exports = {
         title = title.slice(0, 250) + '...';
       }
 
-      let description = completion.data.choices[0].message.content;
+      let description = completion.choices[0].message.content;
 
       const embed = new EmbedBuilder()
         .setAuthor({
@@ -77,12 +77,12 @@ module.exports = {
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      if (error.response) {
-        console.log(error.response.status);
-        console.log(error.response.data);
+      if (error instanceof OpenAI.APIError) {
+        console.log(error.status);
+        console.log(error.data);
         await interaction.editReply(
           'Error running command',
-          error.response.data.error.message
+          error.message
         );
       } else {
         console.log(error);
