@@ -9,8 +9,10 @@ module.exports = {
         .setName('visibility')
         .setDescription('Whether to show or hide channel')
         .setRequired(true)
-        .addChoice('Show', 'show')
-        .addChoice('Hide', 'hide')
+        .addChoices(
+          { name: 'Show', value: 'show' },
+          { name: 'Hide', value: 'hide' }
+        )
     ),
   staffOnly: true,
   usage: `<show|hide>`,
