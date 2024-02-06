@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { PermissionsBitField, ChannelType, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -77,18 +77,19 @@ const showMemberCountChannel = async (interaction, visible) => {
 
 const createMemberCountChannel = async (interaction) => {
   try {
-    const channel = await interaction.guild.channels.create('Member Count:', {
-      type: 'GUILD_VOICE',
+    const channel = await interaction.guild.channels.create({
+      name: 'Member Count: ',
+      type: ChannelType.GuildVoice,
       reason: `membercount show command issued by ${interaction.user.tag}`,
       permissionOverwrites: [
         {
           id: interaction.guild.roles.everyone,
-          allow: ['VIEW_CHANNEL'],
-          deny: ['CONNECT'],
+          allow: [PermissionsBitField.Flags.ViewChannel],
+          deny: [PermissionsBitField.Flags.Connect],
         },
         {
           id: interaction.client.user.id,
-          allow: ['CONNECT', 'MANAGE_CHANNELS'],
+          allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ManageChannels],
         },
       ],
     });

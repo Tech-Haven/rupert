@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { SlashCommandBuilder, MessageEmbed  } = require('discord.js');
 const { Configuration, OpenAIApi } = require('openai');
 const { logGpt } = require('../utils/log');
 const { skidAlgorithm } = require('../utils/utils');
