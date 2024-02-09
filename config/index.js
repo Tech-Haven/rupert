@@ -17,3 +17,5 @@ exports.SKID_PROMPT =
 exports.BOT_TOKEN = process.env.FOXY_BOT_TOKEN;
 
 exports.GPT_WEBHOOK_URL = process.env.GPT_WEBHOOK_URL;
+
+exports.QUIZ_API_URL = process.env.QUIZ_API_URL;
