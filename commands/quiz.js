@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType } = require('discord.js');
 const {QUIZ_API_URL} = require('../config')
 
 const axios = require('axios')
@@ -77,27 +77,65 @@ module.exports = {
             const message = await interaction.editReply({ embeds: [embed], components: [row] });
 
             const collectorFilter = i => i.user.id === interaction.user.id
+            const numOfCorrectAnswers = quiz.CorrectAnswers.length
+            const userSelectedAnswers = []
 
-            try {
-                const confirmation = await message.awaitMessageComponent({filter: collectorFilter, time: 30_000})
+            // message collector that checks if selected buttons = number of correctAnswers length
+            const collector = message.createMessageComponentCollector({
+                componentType: ComponentType.Button,
+                collectorFilter,
+                time: 30_000,
+                max: numOfCorrectAnswers
+            })
 
-                if (quiz.CorrectAnswers.includes(confirmation.customId)){
+            collector.on('collect', async (int) => {
+                userSelectedAnswers.push(int.component.customId)
+                
+                const btn =  row.components.find((c) => c.data.custom_id === int.component.customId)
+
+                btn.setDisabled(true)
+
+                await interaction.editReply({ embeds: [embed], components: [row] });
+            })
+
+            collector.on('end', async () => {
+                const correct = arrayEquals(userSelectedAnswers, quiz.CorrectAnswers)
+
+                if (correct) {
                     const correctEmbed = embed.addFields(correctAnswerField)
-                    await confirmation.update({ embeds: [correctEmbed], components: []})
-                } else{
+                    await interaction.editReply({ embeds: [correctEmbed], components: []})
+                } else {
                     const incorrectEmbed = embed.addFields(incorrectAnswerField)
-                    await confirmation.update({ embeds: [incorrectEmbed], components: []})
+                    await interaction.editReply({ embeds: [incorrectEmbed], components: []})
                 }
-
-            } catch (error) {
-                await interaction.editReply({ content: 'Confirmation not received within 30 seconds, cancelling', components: [] });
-            }
+            })
         
         } catch (error) {
             console.error(error)
-            await interaction.editReply(
-                'Error running command',
-              );
+            if (error.response) {
+                console.log(error.response.data)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+                await interaction.editReply(
+                    `Error running command: ${error.response.message}`,
+                  );
+            } else if (error.request) {
+                await interaction.editReply(
+                    'Request to Quiz API failed. Try again later.',
+                  );
+            } else {
+                await interaction.editReply(
+                    `Error running command: ${error.message}`,
+                  );
+            }
         }
     }
+}
+
+
+const arrayEquals = (a, b) => {
+    return Array.isArray(a) &&
+        Array.isArray(b) &&
+        a.length === b.length &&
+        a.every((val, index) => val === b[index]);
 }
