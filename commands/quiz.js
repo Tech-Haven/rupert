@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType, ActionRow } = require('discord.js');
 const {QUIZ_API_URL} = require('../config')
 
 const axios = require('axios')
@@ -70,11 +70,13 @@ module.exports = {
                 return button
             })
 
-            const row = new ActionRowBuilder()
-                .addComponents(emojiButtons)
+            const chunkedArray = chunkArray(emojiButtons, 5);
 
+            const components = chunkedArray.map((a) => {
+                return new ActionRowBuilder().addComponents(a)
+            })
 
-            const message = await interaction.editReply({ embeds: [embed], components: [row] });
+            const message = await interaction.editReply({ embeds: [embed], components });
 
             const collectorFilter = i => i.user.id === interaction.user.id
             const numOfCorrectAnswers = quiz.CorrectAnswers.length
@@ -91,11 +93,11 @@ module.exports = {
             collector.on('collect', async (int) => {
                 userSelectedAnswers.push(int.component.customId)
                 
-                const btn =  row.components.find((c) => c.data.custom_id === int.component.customId)
+                const btn = emojiButtons.find((c) => c.data.custom_id === int.component.customId)
 
                 btn.setDisabled(true)
 
-                await interaction.editReply({ embeds: [embed], components: [row] });
+                await int.update({ embeds: [embed], components });
             })
 
             collector.on('end', async () => {
@@ -139,3 +141,11 @@ const arrayEquals = (a, b) => {
         a.length === b.length &&
         a.every((val, index) => val === b[index]);
 }
+
+const chunkArray = (array, chunkSize) => {
+    let result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
+  }
