@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType, ActionRow } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType, ActionRow, Embed } = require('discord.js');
 const {QUIZ_API_URL} = require('../config')
 
 const axios = require('axios')
@@ -33,13 +33,6 @@ module.exports = {
                 return `:regional_indicator_${letter}: ${answ}${last_elem == answ ? '' : '\n\n'}`
             })
 
-            const fields = [
-                {
-                    name: "Select an answer with the reaction buttons below:",
-                    value: fieldValue.join('')
-                }
-            ]
-
             const correctAnswerField = [
                 {
                     name: "Correct!",
@@ -54,10 +47,15 @@ module.exports = {
                 }
             ]
 
-            const embed = new EmbedBuilder()
+            const questionEmbed = new EmbedBuilder()
+                .setTitle("Question")
                 .setDescription(`**${quiz.Question}**`)
-                .setFields(fields)
                 .setTimestamp()
+
+            const choicesEmbed = new EmbedBuilder()
+                .setTitle("Choices")
+                .setDescription(fieldValue.join(''))
+                .setFooter({text: "Timeout after 30 seconds"}) 
 
             const codePoint = 0x1F1E6 // :regional_indicator_a:
 
@@ -76,7 +74,7 @@ module.exports = {
                 return new ActionRowBuilder().addComponents(a)
             })
 
-            const message = await interaction.editReply({ embeds: [embed], components });
+            const message = await interaction.editReply({ embeds: [questionEmbed, choicesEmbed], components });
 
             const collectorFilter = i => i.user.id === interaction.user.id
             const numOfCorrectAnswers = quiz.CorrectAnswers.length
@@ -97,18 +95,18 @@ module.exports = {
 
                 btn.setDisabled(true)
 
-                await int.update({ embeds: [embed], components });
+                await int.update({ components });
             })
 
             collector.on('end', async () => {
                 const correct = arrayEquals(userSelectedAnswers, quiz.CorrectAnswers)
 
                 if (correct) {
-                    const correctEmbed = embed.addFields(correctAnswerField)
-                    await interaction.editReply({ embeds: [correctEmbed], components: []})
+                    const correctEmbed = choicesEmbed.addFields(correctAnswerField).setFooter({text: null})
+                    await interaction.editReply({ embeds: [questionEmbed, correctEmbed], components: []})
                 } else {
-                    const incorrectEmbed = embed.addFields(incorrectAnswerField)
-                    await interaction.editReply({ embeds: [incorrectEmbed], components: []})
+                    const incorrectEmbed = choicesEmbed.addFields(incorrectAnswerField).setFooter({text: null})
+                    await interaction.editReply({ embeds: [questionEmbed, incorrectEmbed], components: []})
                 }
             })
         
