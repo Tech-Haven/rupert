@@ -33,17 +33,19 @@ module.exports = {
                 return `:regional_indicator_${letter}: ${answ}${last_elem == answ ? '' : '\n\n'}`
             })
 
+            const correctAnswers = quiz.CorrectAnswers.map(e => "- " + e).join("\n")
+
             const correctAnswerField = [
                 {
                     name: "Correct!",
-                    value: quiz.CorrectAnswers.toString()
+                    value: correctAnswers
                 }
             ]
 
             const incorrectAnswerField = [
                 {
                     name: "Sorry, that's incorrect. The answer is: ",
-                    value: quiz.CorrectAnswers.toString()
+                    value: correctAnswers
                 }
             ]
 
