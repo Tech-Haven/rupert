@@ -59,9 +59,12 @@ module.exports = {
 
             const codePoint = 0x1F1E6 // :regional_indicator_a:
 
+            const choicesMap = new Map()
+
             const emojiButtons = quiz.Answers.map((answ, i) => {
+                choicesMap.set(i.toString(), answ)
                 const button = new ButtonBuilder()
-                    .setCustomId(answ)
+                    .setCustomId(i.toString())
                     .setStyle(ButtonStyle.Secondary)
                     .setEmoji(String.fromCodePoint(codePoint + i))
                 
@@ -99,7 +102,7 @@ module.exports = {
             })
 
             collector.on('end', async () => {
-                const correct = arrayEquals(userSelectedAnswers, quiz.CorrectAnswers)
+                const correct = arrayEquals(userSelectedAnswers, quiz.CorrectAnswers, choicesMap)
 
                 if (correct) {
                     const correctEmbed = choicesEmbed.addFields(correctAnswerField).setFooter({text: null})
@@ -133,11 +136,11 @@ module.exports = {
 }
 
 
-const arrayEquals = (a, b) => {
+const arrayEquals = (a, b, choicesMap) => {
     return Array.isArray(a) &&
         Array.isArray(b) &&
         a.length === b.length &&
-        a.every((val, index) => val === b[index]);
+        a.every((val, index) => choicesMap.get(val) === b[index]);
 }
 
 const chunkArray = (array, chunkSize) => {
