@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+
+  foxy:
+    image: ghcr.io/tech-haven/foxy:main
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      FOXY_BOT_TOKEN: ${FOXY_BOT_TOKEN}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GPT_WEBHOOK_URL: ${GPT_WEBHOOK_URL}
+      QUIZ_API_URL: ${QUIZ_API_URL}
