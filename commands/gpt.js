@@ -14,7 +14,7 @@ const openai = new OpenAI(configuration);
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('gpt')
-    .setDescription('Talk to ChatGPT using the gpt-4-turbo model!')
+    .setDescription('Talk to ChatGPT using the gpt-4o model!')
     .addStringOption((option) =>
       option
         .setName('prompt')
@@ -52,7 +52,7 @@ module.exports = {
       }
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4-1106-preview',
+        model: 'gpt-4o',
         messages: messages,
         temperature: 0.7,
         max_tokens: 1000,
