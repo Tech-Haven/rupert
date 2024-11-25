@@ -1,0 +1,37 @@
+services:
+
+  rupert:
+    image: ghcr.io/tech-haven/rupert:${GIT_COMMIT_HASH:-latest}
+    restart: unless-stopped
+    secrets:
+      - rupert_token
+      - openai_token
+      - gpt_webhook_url
+      - quiz_api_url
+    environment:
+      NODE_ENV: production
+      FOXY_BOT_TOKEN: /run/secret/rupert_token
+      OPENAI_API_KEY: /run/secrets/openai_token
+      GPT_WEBHOOK_URL: /run/secrets/gpt_webhook_url
+      QUIZ_API_URL: /run/secrets/quiz_api_url
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+          - default
+          - quiz-api_default
+
+networks:
+  default:
+  quiz-api_default:
+    external: true
+
+secrets:
+  rupert_token:
+    external: true
+  openai_token:
+    external: true
+  gpt_webhook_url:
+    external: true
+  quiz_api_url:
+    external: true

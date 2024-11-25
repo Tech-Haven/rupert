@@ -1,8 +1,7 @@
-version: "3.8"
 services:
 
   foxy:
-    image: ghcr.io/tech-haven/foxy:main
+    image: ghcr.io/tech-haven/rupert:main
     restart: unless-stopped
     environment:
       NODE_ENV: production
