@@ -61,6 +61,7 @@ jobs:
       with:
         name: rupert
         file: docker-stack.yaml
+        host: swift.techhaven.io
         user: deploy
         ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
         env_file: ./envfile

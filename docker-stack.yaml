@@ -1,7 +1,7 @@
 services:
 
   rupert:
-    image: ghcr.io/tech-haven/rupert:${GIT_COMMIT_HASH:-latest}
+    image: ghcr.io/tech-haven/rupert:${GIT_COMMIT_HASH:-main}
     restart: unless-stopped
     secrets:
       - rupert_token
@@ -10,7 +10,7 @@ services:
       - quiz_api_url
     environment:
       NODE_ENV: production
-      FOXY_BOT_TOKEN: /run/secret/rupert_token
+      FOXY_BOT_TOKEN: /run/secrets/rupert_token
       OPENAI_API_KEY: /run/secrets/openai_token
       GPT_WEBHOOK_URL: /run/secrets/gpt_webhook_url
       QUIZ_API_URL: /run/secrets/quiz_api_url

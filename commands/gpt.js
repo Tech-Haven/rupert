@@ -2,11 +2,11 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const OpenAI= require('openai');
 const { logGpt } = require('../utils/log');
 const { skidAlgorithm, randomPromptAlgorithm } = require('../utils/utils');
-const { SKID_PROMPT } = require('../config/index');
+const { SKID_PROMPT, OPENAI_API_KEY } = require('../config/index');
 
 const configuration = {
   organization: 'org-teSKJbo1Bt3jMZnwo9v0A1gb',
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 }
 
 const openai = new OpenAI(configuration);
